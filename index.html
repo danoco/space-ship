@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>space</title>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
+  </head>
+  <body>
+    <p
+      class="count"
+      style="position: absolute; top: 0; left: 5%; color: #fff; font-size: 36px"
+    >
+      0
+    </p>
+    <div
+      class="lost"
+      style="
+        display: none;
+        position: absolute;
+        width: 480px;
+        height: 640px;
+        background-color: rgba(1, 1, 1, 0.5);
+      "
+    >
+      <p
+        style="
+          position: absolute;
+          top: 40%;
+          left: 35%;
+          color: #fff;
+          font-size: 36px;
+        "
+      >
+        Game Over
+      </p>
+      <canvas id="app"></canvas>
+    </div>
+
+    <script src="spaceShip.js"></script>
+  </body>
+</html>
