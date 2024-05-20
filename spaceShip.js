@@ -1,4 +1,4 @@
-let countText = document.querySelector('.count');
+const countText = document.querySelector('.count');
 let counter = 0;
 const gameOverScreen = document.querySelector('.lost');
 
@@ -6,6 +6,9 @@ const platforms = [];
 const bullets = [];
 
 let player;
+
+let moveLeft = false;
+let moveRight = false;
 
 let elapsedTime = 0;
 const platformInterval = 75;
@@ -29,6 +32,16 @@ function createPlatform(texture) {
   return platform;
 }
 
+function createPlayer(texture) {
+  player = new PIXI.Sprite(texture);
+  player.width = 100;
+  player.height = 200;
+  player.anchor.set(0.5);
+  player.x = app.screen.width / 2;
+  player.y = app.screen.height - player.height / 2;
+  app.stage.addChild(player);
+}
+
 function checkCollision(rect1, rect2) {
   const rect1Bounds = rect1.getBounds();
   const rect2Bounds = rect2.getBounds();
@@ -39,6 +52,25 @@ function checkCollision(rect1, rect2) {
     rect1Bounds.y < rect2Bounds.y + rect2Bounds.height &&
     rect1Bounds.y + rect1Bounds.height > rect2Bounds.y
   );
+}
+
+function controls() {
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = true;
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = true;
+    if (e.code === 'Space') {
+      const bullet = new Bullet();
+      bullet.x = player.x - bullet.width / 2;
+      bullet.y = player.y - player.height / 2;
+      app.stage.addChild(bullet);
+      bullets.push(bullet);
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = false;
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = false;
+  });
 }
 
 class Bullet extends PIXI.Graphics {
@@ -59,35 +91,18 @@ async function setup() {
   const playerTexture = await PIXI.Assets.load('./assets/ship.png');
   const platformTexture = await PIXI.Assets.load('./assets/enemy.png');
 
-  player = new PIXI.Sprite(playerTexture);
-  player.width = 100;
-  player.height = 200;
-  player.anchor.set(0.5);
-  player.x = app.screen.width / 2;
-  player.y = app.screen.height - player.height / 2;
-  app.stage.addChild(player);
+  createPlayer(playerTexture);
 
-  let moveLeft = false;
-  let moveRight = false;
-
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = true;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = true;
-    if (e.code === 'Space') {
-      const bullet = new Bullet();
-      bullet.x = player.x - bullet.width / 2;
-      bullet.y = player.y - player.height / 2;
-      app.stage.addChild(bullet);
-      bullets.push(bullet);
-    }
-  });
-
-  window.addEventListener('keyup', (e) => {
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = false;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = false;
-  });
+  controls();
 
   app.ticker.add((delta) => {
+    elapsedTime += delta;
+
+    if (elapsedTime >= platformInterval) {
+      createPlatform(platformTexture);
+      elapsedTime = 0;
+    }
+
     platforms.forEach((platform) => {
       if (checkCollision(player, platform)) {
         gameOverScreen.style.display = 'block';
@@ -96,13 +111,13 @@ async function setup() {
       }
     });
 
-    if (moveLeft && player.x > player.width / 2) player.x -= 10;
-    if (moveRight && player.x < app.screen.width - player.width / 2)
-      player.x += 10;
-
     platformContainer.children.forEach((platform) => {
       platform.y += 3;
     });
+
+    if (moveLeft && player.x > player.width / 2) player.x -= 10;
+    if (moveRight && player.x < app.screen.width - player.width / 2)
+      player.x += 10;
 
     bullets.forEach((bullet) => {
       bullet.move();
@@ -122,13 +137,6 @@ async function setup() {
         bullets.splice(bullets.indexOf(bullet), 1);
       }
     });
-
-    elapsedTime += delta;
-
-    if (elapsedTime >= platformInterval) {
-      createPlatform(platformTexture);
-      elapsedTime = 0;
-    }
   });
 }
 
