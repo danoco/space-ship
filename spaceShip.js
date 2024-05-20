@@ -8,9 +8,9 @@ const bullets = [];
 let player;
 
 let elapsedTime = 0;
-const platformInterval = 100;
+const platformInterval = 75;
 
-const app = new PIXI.Application({ width: 480, height: 640 });
+const app = new PIXI.Application({ background: '#1099bb', resizeTo: window });
 document.body.appendChild(app.view);
 
 const platformContainer = new PIXI.Container();
@@ -19,8 +19,8 @@ app.stage.addChild(platformContainer);
 function createPlatform(texture) {
   const platform = new PIXI.Sprite(texture);
 
-  platform.width = 80;
-  platform.height = 40;
+  platform.width = 150;
+  platform.height = 80;
   platform.x = Math.random() * (app.screen.width - platform.width);
   platform.y = -platform.height;
 
@@ -45,9 +45,9 @@ class Bullet extends PIXI.Graphics {
   constructor() {
     super();
     this.beginFill(0xff0000);
-    this.drawRect(0, 0, 5, 10);
+    this.drawRect(0, 0, 10, 20);
     this.endFill();
-    this.speed = 5;
+    this.speed = 10;
   }
 
   move() {
@@ -60,8 +60,8 @@ async function setup() {
   const platformTexture = await PIXI.Assets.load('./assets/enemy.png');
 
   player = new PIXI.Sprite(playerTexture);
-  player.width = 50;
-  player.height = 100;
+  player.width = 100;
+  player.height = 200;
   player.anchor.set(0.5);
   player.x = app.screen.width / 2;
   player.y = app.screen.height - player.height / 2;
@@ -96,12 +96,12 @@ async function setup() {
       }
     });
 
-    if (moveLeft && player.x > player.width / 2) player.x -= 5;
+    if (moveLeft && player.x > player.width / 2) player.x -= 10;
     if (moveRight && player.x < app.screen.width - player.width / 2)
-      player.x += 5;
+      player.x += 10;
 
     platformContainer.children.forEach((platform) => {
-      platform.y += 1;
+      platform.y += 3;
     });
 
     bullets.forEach((bullet) => {
