@@ -1,6 +1,6 @@
-const countText = document.querySelector('.count');
+const countText = document.querySelector(".count");
 let counter = 0;
-const gameOverScreen = document.querySelector('.lost');
+const gameOverScreen = document.querySelector(".lost");
 
 const platforms = [];
 const bullets = [];
@@ -13,7 +13,7 @@ let moveRight = false;
 let elapsedTime = 0;
 const platformInterval = 75;
 
-const app = new PIXI.Application({ background: '#1099bb', resizeTo: window });
+const app = new PIXI.Application({ background: "#1099bb", resizeTo: window });
 document.body.appendChild(app.view);
 
 const platformContainer = new PIXI.Container();
@@ -55,21 +55,29 @@ function checkCollision(rect1, rect2) {
 }
 
 function controls() {
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = true;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = true;
-    if (e.code === 'Space') {
-      const bullet = new Bullet();
-      bullet.x = player.x - bullet.width / 2;
-      bullet.y = player.y - player.height / 2;
-      app.stage.addChild(bullet);
-      bullets.push(bullet);
-    }
+  const leftButton = document.querySelector(".leftBtn");
+  const rightButton = document.querySelector(".rightBtn");
+  const fireButton = document.querySelector(".fireBtn");
+
+  leftButton.addEventListener("touchstart", () => {
+    moveLeft = true;
+  });
+  leftButton.addEventListener("touchend", () => {
+    moveLeft = false;
+  });
+  rightButton.addEventListener("touchstart", () => {
+    moveRight = true;
+  });
+  rightButton.addEventListener("touchend", () => {
+    moveRight = false;
   });
 
-  window.addEventListener('keyup', (e) => {
-    if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft = false;
-    if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight = false;
+  fireButton.addEventListener("touchstart", () => {
+    const bullet = new Bullet();
+    bullet.x = player.x - bullet.width / 2;
+    bullet.y = player.y - player.height / 2;
+    app.stage.addChild(bullet);
+    bullets.push(bullet);
   });
 }
 
@@ -88,8 +96,8 @@ class Bullet extends PIXI.Graphics {
 }
 
 async function setup() {
-  const playerTexture = await PIXI.Assets.load('./assets/ship.png');
-  const platformTexture = await PIXI.Assets.load('./assets/enemy.png');
+  const playerTexture = await PIXI.Assets.load("./assets/ship.png");
+  const platformTexture = await PIXI.Assets.load("./assets/enemy.png");
 
   createPlayer(playerTexture);
 
@@ -105,7 +113,7 @@ async function setup() {
 
     platforms.forEach((platform) => {
       if (checkCollision(player, platform)) {
-        gameOverScreen.style.display = 'block';
+        gameOverScreen.style.display = "block";
 
         app.ticker.stop();
       }
